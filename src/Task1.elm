@@ -1,9 +1,11 @@
 module Task1 exposing (main, nums)
 
 import Array exposing (foldl, fromList)
+import Debug
 import Html
 
 
+nums : List number
 nums =
     [ 195
     , 197
@@ -2008,19 +2010,42 @@ nums =
     ]
 
 
+
+-- answer 5
+-- test1 =
+--     [ 199, 200, 208, 210, 200, 207, 240, 269, 260, 263 ]
+
+
+main : Html.Html msg
 main =
     foldl
-        (\curr ( prev, acc ) ->
-            ( curr
-            , if prev > -1 && curr > prev then
-                acc + 1
+        (\curr acc ->
+            case acc of
+                [ nMin3, nMin2, nMin1, count ] ->
+                    [ nMin2
+                    , nMin1
+                    , curr
+                    , let
+                        sumPrev3 =
+                            nMin3 + nMin2 + nMin1
 
-              else
-                acc
-            )
+                        sumCurr3 =
+                            nMin2 + nMin1 + curr
+                      in
+                      if nMin3 > 0 && nMin2 > 0 && nMin1 > 0 && sumCurr3 > sumPrev3 then
+                        count + 1
+
+                      else
+                        count
+                    ]
+
+                _ ->
+                    Debug.log "count" [ 0, 0, 0, 0 ]
         )
-        ( -1, 0 )
+        [ 0, 0, 0, 0 ]
         (fromList nums)
-        |> Tuple.second
+        |> List.reverse
+        |> List.head
+        |> Maybe.withDefault 0
         |> String.fromInt
         |> Html.text
