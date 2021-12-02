@@ -6,23 +6,23 @@ import Html
 
 main =
     foldl
-        (\( direction, distance ) ( x, y ) ->
+        (\( direction, x ) ( h, depth, aim ) ->
             case direction of
                 "forward" ->
-                    ( x + distance, y )
+                    ( h + x, depth + aim*x, aim )
 
                 "down" ->
-                    ( x, y + distance )
+                    ( h, depth, aim + x )
 
                 "up" ->
-                    ( x, y - distance )
+                    ( h, depth, aim - x )
 
                 _ ->
-                    ( x, y )
+                    ( h, depth, aim )
         )
-        ( 0, 0 )
+        ( 0, 0, 0 )
         (fromList directions)
-        |> (\( x, y ) -> x * y)
+        |> (\( x, y, _ ) -> x * y)
         |> String.fromInt
         |> Html.text
 
