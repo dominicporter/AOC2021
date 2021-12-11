@@ -61,6 +61,6 @@ suite =
                     Expect.equal (getLifeSupportRating sample1) 230
             , test "works with actual input" <|
                 \_ ->
-                    Expect.equal (getLifeSupportRating actualInput) 230
+                    Expect.equal (getLifeSupportRating actualInput) 4636702
             ]
         ]
