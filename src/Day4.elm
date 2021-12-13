@@ -1,6 +1,7 @@
 module Day4 exposing (..)
 
 import Array
+import Dict exposing (update)
 import Html
 
 
@@ -105,8 +106,8 @@ getMaybeWinningBoard boards =
         boards
 
 
-getWinningBoard : List Int -> List MarkableBoard -> ( MarkableBoard, Int )
-getWinningBoard calledNumbers markableBoards =
+getFirstWinningBoard : List Int -> List MarkableBoard -> ( MarkableBoard, Int )
+getFirstWinningBoard calledNumbers markableBoards =
     let
         firstNumber =
             Maybe.withDefault 0 <| List.head calledNumbers
@@ -126,10 +127,43 @@ getWinningBoard calledNumbers markableBoards =
 
         Nothing ->
             if List.length restOfNumbers > 0 then
-                getWinningBoard restOfNumbers updatedBoards
+                getFirstWinningBoard restOfNumbers updatedBoards
 
             else
                 ( [], 0 )
+
+
+getLastWinningBoard : List Int -> List MarkableBoard -> ( MarkableBoard, Int )
+getLastWinningBoard calledNumbers markableBoards =
+    let
+        ( lastWinningBoard, winningNumber, _ ) =
+            List.foldl
+                (\num ( prevWinner, prevWinningNumber, boards ) ->
+                    let
+                        nop =
+                            Debug.log "num of boards" (List.length boards)
+
+                        updatedBoards =
+                            markBoards num boards
+
+                        maybeWinngingBoard =
+                            Debug.log "maybeWinngingBoard" (getMaybeWinningBoard updatedBoards)
+                    in
+                    case maybeWinngingBoard of
+                        Just board ->
+                            let
+                                remainingBoards =
+                                    List.filter (\b -> not (isWinningBoard b)) updatedBoards
+                            in
+                            ( Just board, num, remainingBoards )
+
+                        Nothing ->
+                            ( prevWinner, prevWinningNumber, updatedBoards )
+                )
+                ( Nothing, 0, markableBoards )
+                calledNumbers
+    in
+    ( Maybe.withDefault [] lastWinningBoard, winningNumber )
 
 
 sumUnmarkedNumbers : MarkableBoard -> Int
@@ -159,7 +193,19 @@ getBingoFinalScore calledNumbers boards =
             getMarkableBoards boards
 
         ( winningBoard, lastNumber ) =
-            Debug.log "winningBoard" (getWinningBoard calledNumbers markableBoards)
+            getFirstWinningBoard calledNumbers markableBoards
+    in
+    lastNumber * sumUnmarkedNumbers winningBoard
+
+
+getBingoFinalScoreForLastWinningBoard : List Int -> List Board -> Int
+getBingoFinalScoreForLastWinningBoard calledNumbers boards =
+    let
+        markableBoards =
+            getMarkableBoards boards
+
+        ( winningBoard, lastNumber ) =
+            Debug.log "winningBoard" (getLastWinningBoard calledNumbers markableBoards)
     in
     lastNumber * sumUnmarkedNumbers winningBoard
 
