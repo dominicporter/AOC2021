@@ -29,27 +29,26 @@ buildBoard segments =
 
 moveAlongOne : Segment -> Segment
 moveAlongOne ( ( startX, startY ), ( endX, endY ) ) =
+    -- if startX < endX || startY < endY then
     ( ( if startX < endX then
             startX + 1
+
+        else if endX < startX then
+            startX - 1
 
         else
             startX
       , if startY < endY then
             startY + 1
 
+        else if endY < startY then
+            startY - 1
+
         else
             startY
       )
-    , ( if endX < startX then
-            endX + 1
-
-        else
-            endX
-      , if endY < startY then
-            endY + 1
-
-        else
-            endY
+    , ( endX
+      , endY
       )
     )
 
@@ -87,7 +86,7 @@ incrementAtStart segment board =
         minY =
             Debug.log "minY" (min startY endY)
     in
-    incrementXY minX minY board
+    incrementXY startX startY board
 
 
 displayBoard : Board -> Board
@@ -98,23 +97,24 @@ displayBoard board =
 
         nop1 =
             List.reverse board
-            |> List.map
-                (\row ->
-                    Debug.log ""
-                        (row
-                            |> List.map String.fromInt
-                            |> List.map
-                                (\x ->
-                                    if x == "0" then
-                                        "."
+                |> List.map
+                    (\row ->
+                        Debug.log ""
+                            (row
+                                |> List.map String.fromInt
+                                |> List.map
+                                    (\x ->
+                                        if x == "0" then
+                                            "."
 
-                                    else
-                                        x
-                                )
-                            |> String.concat
-                        )
-                )
-                -- board
+                                        else
+                                            x
+                                    )
+                                |> String.concat
+                            )
+                    )
+
+        -- board
     in
     board
 
@@ -139,10 +139,34 @@ drawSegmentOnBoard segment board =
         board
 
 
+drawSegmentOnBoardWithDiagonals : Segment -> Board -> Board
+drawSegmentOnBoardWithDiagonals segment board =
+    let
+        ( ( startX, startY ), ( endX, endY ) ) =
+            Debug.log "segment" segment
+
+        -- nop =
+        --     displayBoard board
+    in
+    if startX == endX && startY == endY then
+        incrementXY startX startY board
+
+    else
+        drawSegmentOnBoardWithDiagonals (moveAlongOne segment) (incrementAtStart segment board)
+
+
 drawSegmentsOnBoard : Board -> List Segment -> Board
 drawSegmentsOnBoard board segments =
     List.foldl
         drawSegmentOnBoard
+        board
+        segments
+
+
+drawSegmentsOnBoardWithDiagonals : Board -> List Segment -> Board
+drawSegmentsOnBoardWithDiagonals board segments =
+    List.foldl
+        drawSegmentOnBoardWithDiagonals
         board
         segments
 
@@ -155,26 +179,34 @@ type alias Segment =
     ( Coord, Coord )
 
 
-getOverLappingLinesCount : List Segment -> number
-getOverLappingLinesCount segments =
+getOverLappingLinesCount : List Segment -> Bool -> number
+getOverLappingLinesCount segments withDiagonals =
     let
         startingBoard =
             buildBoard segments
 
         completedBoard =
-            drawSegmentsOnBoard startingBoard segments
+            if withDiagonals then
+                drawSegmentsOnBoardWithDiagonals startingBoard segments
+
+            else
+                drawSegmentsOnBoard startingBoard segments
     in
-        List.foldl
-            (\row count1 ->
+    List.foldl
+        (\row count1 ->
             List.foldl
                 (\val count2 ->
-                    if val > 1 then count2+1 else count2
+                    if val > 1 then
+                        count2 + 1
+
+                    else
+                        count2
                 )
                 count1
                 row
-            )
-            0
-            completedBoard
+        )
+        0
+        completedBoard
 
 
 main : Html.Html msg
