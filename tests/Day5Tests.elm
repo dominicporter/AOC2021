@@ -98,7 +98,7 @@ suite =
                         getOverLappingLinesCount actualSegments False
                             |> Expect.equal 5690
             ]
-        , only <|describe "getOverLappingLinesCount with Diagonals (Part 2)"
+        , describe "getOverLappingLinesCount with Diagonals (Part 2)"
             [ test "works with Sample data" <|
                 \_ ->
                     getOverLappingLinesCount sampleSegments True
@@ -106,7 +106,7 @@ suite =
 
             -- This takes a long time...
             , 
-                test "works with actual data" <|
+                skip <| test "works with actual data" <|
                     \_ ->
                         getOverLappingLinesCount actualSegments True
                             |> Expect.equal 5690
