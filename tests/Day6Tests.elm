@@ -9,7 +9,7 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    only <|
+    
         describe "Day6" <|
             [ describe "convertToCountMap"
                 [ test "works with sampleInput" <|
