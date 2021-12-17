@@ -1,14 +1,29 @@
 module Day7 exposing (..)
 
-import Array exposing (..)
+-- import Array exposing (..)
 
 
+getComplexFuel fuelUsed =
+    List.range 1 fuelUsed
+        |> List.foldl (+) 0
+
+
+tryToGetBetterThan : Int -> Int -> List Int -> Int
 tryToGetBetterThan bestSoFar posToMoveTo positionList =
     min
         bestSoFar
     <|
         List.foldl
-            (\pos acc -> acc + abs (pos - posToMoveTo))
+            (\pos acc ->
+                let
+                    fuelUsed =
+                        abs (pos - posToMoveTo)
+
+                    complexFuel =
+                        getComplexFuel fuelUsed
+                in
+                acc + complexFuel
+            )
             0
             positionList
 

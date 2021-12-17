@@ -9,16 +9,34 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    only <|
-        describe "Day7"
-            [ describe "getMinFuelToAlignCrabs"
-                [ test "works with sample input" <|
+    describe "Day7"
+        [ describe "getMinFuelToAlignCrabs"
+            [ skip <|
+                test "works with sample input" <|
                     \_ ->
                         getMinFuelToAlignCrabs sampleInput
                             |> Expect.equal 37
-                , test "works with actual input" <|
+            , test "works with sample input and complex fuel calcs" <|
+                \_ ->
+                    getMinFuelToAlignCrabs sampleInput
+                        |> Expect.equal 168
+            , skip <|
+                test "works with actual input" <|
                     \_ ->
                         getMinFuelToAlignCrabs actualInput
                             |> Expect.equal 328187
-                ]
+
+            -- this is slow
+            , skip <|
+                test "works with actual input and complex fuel calcs" <|
+                    \_ ->
+                        getMinFuelToAlignCrabs actualInput
+                            |> Expect.equal 91257582
             ]
+        , describe "getComplexFuel"
+            [ test "works with simple nums" <|
+                \_ ->
+                    getComplexFuel 3
+                        |> Expect.equal 6
+            ]
+        ]
